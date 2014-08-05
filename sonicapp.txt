@@ -1,0 +1,208 @@
+	
+
+    <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:paddingBottom="@dimen/activity_vertical_margin"
+        android:paddingLeft="@dimen/activity_horizontal_margin"
+        android:paddingRight="@dimen/activity_horizontal_margin"
+        android:paddingTop="@dimen/activity_vertical_margin"
+        tools:context="com.aditya.autologin.Home" >
+     
+        <WebView
+            android:id="@+id/webView1"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_alignParentTop="true"
+            android:layout_marginTop="68dp" />
+     
+        <TextView
+            android:id="@+id/textView1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:text="@string/test"
+            android:onClick="test"
+            android:textAppearance="?android:attr/textAppearanceLarge" />
+     
+     
+    </RelativeLayout>
+
+	
+
+    package com.aditya.autologin;
+     
+    import android.app.Activity;
+    import android.net.Uri;
+    import android.os.Bundle;
+    import android.os.Handler;
+    import android.util.Log;
+    import android.view.Menu;
+    import android.view.MenuItem;
+    import android.webkit.JavascriptInterface;
+    import android.webkit.WebChromeClient;
+    import android.webkit.WebSettings;
+    import android.webkit.WebView;
+    import android.webkit.WebViewClient;
+    import android.widget.TextView;
+     
+     
+     
+     
+    public class Home extends Activity {
+           
+            // here i am going to define a custom JSInterface class
+            class JsObject {
+                @JavascriptInterface
+                public String toString() { return "injectedObject"; }
+             }
+            // Here i am editing the webview in my app to make sure the webpage at "http://192.168.20.1/auth1.html" doesn't just redirect me to
+            // "http://192.168.20.1/auth.html"
+            private class MyWebViewClient extends WebViewClient {
+            @Override
+            public boolean shouldOverrideUrlLoading(WebView view, String url) {
+                if (Uri.parse(url).getHost().equals("http://192.168.20.1/auth.html")) {
+                    // This is my web site, so do not override; let my WebView load the page
+                    return false;
+                }
+               
+                return true;
+            }
+           
+            public void onPageFinished(WebView view, String url) {
+                // do something here
+                    //102113020
+                    //'Intel3334'
+                    web.loadUrl("javascript:(function(){document.getElementById('userName').value='110113006';document.getElementsByName('pwd')[0].value='Nitt200';");
+                    //web.loadUrl("javascript:document.getElementById('userName').value=110113006;");
+                    //web.loadUrl("javascript:document.getElementsByName('pwd')[0].type='text';");
+                   
+                    //web.loadUrl("javascript:document.getElementsByName('pwd')[0].value='Nitt200';");
+                    web.loadUrl("javascript: {document.getElementsByName('standardPass')[0].submit()};");
+                   
+            }
+        }
+           
+            // here i am defining the global variables i am going to use in the app
+            WebView web;
+            TextView text;
+            String url = "http://192.168.20.1/auth1.html";
+            Handler handler;
+           
+        @Override
+        protected void onCreate(Bundle savedInstanceState) {
+            super.onCreate(savedInstanceState);
+            //set the layout with the webview and textview
+            setContentView(R.layout.activity_home);
+            // get both handles onto the webview and textview properly configured
+            web = (WebView) findViewById(R.id.webView1);
+            text = (TextView) findViewById(R.id.textView1);
+           
+                    // use the modified mywebviewclient for reasons mentioned above the client definition
+            web.setWebViewClient(new MyWebViewClient());
+           
+            web.getSettings().setJavaScriptEnabled(true);
+           
+            //now, we need to point it to our custom JSInterface class
+            web.addJavascriptInterface(new JsObject(), "injectedObject");
+           
+            web.loadUrl(url);
+         
+            text.setText("Yosh!");
+        }
+     
+        @Override
+        public boolean onCreateOptionsMenu(Menu menu) {
+            // Inflate the menu; this adds items to the action bar if it is present.
+            getMenuInflater().inflate(R.menu.home, menu);
+            return true;
+        }
+     
+        @Override
+        public boolean onOptionsItemSelected(MenuItem item) {
+            // Handle action bar item clicks here. The action bar will
+            // automatically handle clicks on the Home/Up button, so long
+            // as you specify a parent activity in AndroidManifest.xml.
+            int id = item.getItemId();
+            if (id == R.id.action_settings) {
+                return true;
+            }
+            return super.onOptionsItemSelected(item);
+        }
+       
+       
+        // for testing purposes start the "login" in the test() which in called in the textview onclick
+        public void test(){
+             
+             text.setText("Started");
+             
+             
+       
+             web.getSettings().setJavaScriptEnabled(true);
+             WebSettings settings = web.getSettings();
+             web.getSettings().setSaveFormData(true);
+             settings.setDomStorageEnabled(true);
+             text.setText("going to load/loading");
+             // here webView.loadUrl() is asynchronous: it returns immediately and WebView keeps working in it's own thread.
+             web.loadUrl(url);
+             text.setText("Loaded");
+             
+           
+             
+             
+             //needs chromeclient
+             web.loadUrl("javascript:alert('ggd')");
+             
+             
+             web.loadUrl("javascript:document.getElementById('userName').value=110113006;");
+             //web.loadUrl("javascript: {document.getElementsByName(\"pwd\")[0].value =" + password + ";};");
+             web.loadUrl("javascript: {document.getElementsByName('standardPass')[0].submit()};");
+             
+             
+             text.setText("All done, Yosh!");
+           
+        }
+       
+     
+       
+        /*
+       
+        private class HelloWebViewClient extends WebViewClient {
+     
+            @Override
+            public boolean shouldOverrideUrlLoading(WebView  view, String url) {      
+                   
+                    view.loadUrl(url);  
+                    return true;            
+            }
+     
+            @Override
+            public void onPageFinished(WebView view, String url) {
+                    // TODO Auto-generated method stub
+                    super.onPageFinished(view, url);            
+                   
+                    String username = "110113006";
+                String password = "Nitt200";
+     
+                    web.setVisibility(View.VISIBLE);
+                    web.setVisibility(View.GONE);
+                    web.requestFocus();
+                    web.loadUrl("javascript: {" +
+                        "document.getElementById('userName').value = '"+username +"';" +
+                        "document.getElementById('pwd').value = '"+password+"';" +
+                        "var frms = document.getElementsByName('loginForm');" +
+                        "frms[0].submit(); };");
+    }
+     
+             web.loadUrl("javascript: { document.getElementById('userName').value = '"+username +"';" +
+                        "document.getElementById('pwd').value = '"+password+"';" +
+                        "var frms = document.getElementsByName('loginForm');" +
+                        "frms[0].submit(); };");
+             
+    }
+    */
+     
+    }
+    ////"javascript: {document.getElementById('userName').value = '110113006';document.getElementById('pwd').value = 'Nitt200';var frms = document.getElementsByName('loginForm');frms[0].submit(); };"
+
