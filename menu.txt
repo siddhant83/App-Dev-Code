@@ -1,0 +1,20 @@
+salad
+	tossed salad 
+	aloo chat
+	tandoori salad
+soup 
+	sweet corn
+indian bread
+	butter naan
+	kulcha
+rice
+      veg fried rice
+veg curry
+	mix vegetable nd baby corn
+veg masala
+	chilly gobi
+dal 
+	dal makhini
+dessert
+	gulab jamun
+	strawberry ice cream 
